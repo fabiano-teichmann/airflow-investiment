@@ -1,0 +1,7 @@
+pytest
+logger
+apache-airflow
+black
+isort
+investpy
+pendulum
