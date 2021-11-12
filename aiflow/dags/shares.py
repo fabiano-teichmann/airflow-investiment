@@ -11,6 +11,7 @@ from airflow.operators.python import PythonOperator
 
 from domain.company_information import get_company_information
 from domain.get_historical_data import get_historical_data
+from utils.build_directories import build_directories
 
 
 logger = logging.getLogger(__name__)
@@ -46,7 +47,7 @@ def get_next_stocks(**kwargs):
     ti = kwargs["ti"]
     country = kwargs["params"]["country"]
     stocks = ti.xcom_pull(key=f"stocks_{country}", task_ids=Tasks.get_stocks.name)
-    stock_with_success = os.listdir("/opt/airflow/data/bronze")
+    stock_with_success = os.listdir("/opt/airflow/data/bronze/stocks")
     if stock_with_success:
         stock_with_success = [stock.replace(".csv", "") for stock in stock_with_success]
     logger.info("stock with success %s", stock_with_success)
@@ -107,28 +108,6 @@ def get_historical_stocks(**kwargs):
             ti.xcom_push(key="stock_get_with_success", value=stock_get_with_success)
             raise error
     ti.xcom_push(key=Xcoms.stock_get_with_success.name, value=stock_get_with_success)
-
-
-def build_directories():
-    logger.info("List directories %s", os.listdir("/opt/airflow"))
-    dir_bronze = "/opt/airflow/data/bronze"
-    dir_silver = "/opt/airflow/data/silver"
-    dir_gold = "/opt/airflow/data/gold"
-    if not os.path.exists(dir_bronze):
-        logger.info("create dir %s", dir_bronze)
-        os.mkdir(dir_bronze)
-    if not os.path.exists(dir_silver):
-        logger.info("create dir %s", dir_silver)
-        os.mkdir(dir_silver)
-    if not os.path.exists(dir_gold):
-        logger.info("create dir %s", dir_gold)
-    stocks = os.path.join(dir_bronze, "stocks")
-    info_stocks = os.path.join(dir_bronze, "info_stocks")
-    if not os.path.exists(stocks):
-        os.mkdir(stocks)
-    if not os.path.exists(info_stocks):
-        os.mkdir(info_stocks)
-    logger.info("finished build directories")
 
 
 dag = DAG(

@@ -3,7 +3,7 @@ from typing import List, Optional
 
 import investpy
 
-from adapters.save_to_file import save_json
+from utils.save_to_file import save_json
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ def get_company_information(
     )
     search_result = investpy.search_quotes(**parameters)
     information = search_result.retrieve_information()
-    path_information = f"/opt/airflow/data/bronze/information_{company}.json"
+    path_information = f"/opt/airflow/data/bronze/information/{company}.json"
     information.update(
         {
             "name": search_result.name,

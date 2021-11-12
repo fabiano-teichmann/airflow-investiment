@@ -25,6 +25,6 @@ def get_historical_data(country, stock: str, to_date: str, from_date: str, **kwa
         logger.error(error)
         raise error
 
-    path_csv = f"/opt/airflow/data/bronze/{stock}.csv"
+    path_csv = f"/opt/airflow/data/bronze/stocks/{stock}.csv"
     df.to_csv(path_csv, index=False)
     logger.info("Save in: %s", path_csv)
